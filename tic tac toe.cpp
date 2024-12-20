@@ -26,6 +26,7 @@ void printBoard(const vector<vector<char>> &board) {
         for(int c = 0; c < Cols; c++) {
             if(board[r][c] == You) SetColor(92); // Player's color
             else if (board[r][c] == AI) SetColor(91); // AI's color
+            else ResetColor();
             cout << board[r][c] << " \n" [c + 1 == Cols];
         }
         ResetColor();
@@ -96,8 +97,7 @@ int minimax(vector<vector<char>> &board, bool isMaximizing) {
 }
 
 pair<int, int> findBestMove(vector<vector<char>> &board) {
-    int bestScore = INT_MIN;
-    pair<int, int> bestMove = {-1, -1};
+    map<int, vector<pair<int, int>>> scores;
     for(int r = 0; r < Rows; r++) {
         for(int c = 0; c < Cols; c++) {
             if(board[r][c] == '.') {
@@ -107,14 +107,13 @@ pair<int, int> findBestMove(vector<vector<char>> &board) {
                 board[r][c] = AI;
                 int score = minimax(board, false);
                 board[r][c] = '.';
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMove = {r, c};
-                }
+                scores[score].push_back({r, c});
             }
         }
     }
-    return bestMove;
+    auto &bestMoves = prev(scores.end())->second;
+    // for(auto &i: bestMoves) cout << i << " "; cout << endl;
+    return bestMoves[my_rand(0, int(bestMoves.size()) - 1)];
 }
 
 void printAns(const vector<vector<char>> &board, int color) {
